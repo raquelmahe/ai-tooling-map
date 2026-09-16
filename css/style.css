@@ -1133,6 +1133,7 @@ main {
 }
 .select-control {
   position: relative;
+  width: 100%;
   min-width: 0;
 }
 .select-control .icon {
@@ -1144,6 +1145,9 @@ main {
   color: var(--color-text);
   pointer-events: none;
   transform: translateY(-50%);
+}
+.select-control select {
+  width: 100%;
 }
 .select-control--filter {
   flex: 0 1 190px;
@@ -1239,6 +1243,9 @@ main {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-base);
+}
+.form-field-row > .form-field {
+  min-width: 0;
 }
 .form-footer {
   display: flex;
