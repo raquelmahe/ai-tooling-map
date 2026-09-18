@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-18T06:53:39Z",
+  "title": "Design System: Product Design AI Tooling System",
+  "extensions": {
+    "colorMeta": {
+      "workspace": {
+        "role": "neutral",
+        "displayName": "Workbench Paper",
+        "canonical": "#fbfbfa",
+        "tonalRamp": ["#252525", "#4b4b4b", "#777776", "#a5a5a4", "#c8c8c7", "#dfdfde", "#efefee", "#fbfbfa"]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Evidence Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#4d4d4d", "#7a7a7a", "#a8a8a8", "#cccccc", "#e3e3e3", "#f2f2f2", "#ffffff"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Structural Border",
+        "canonical": "#d8d8d8",
+        "tonalRamp": ["#202020", "#414141", "#676767", "#8f8f8f", "#adadad", "#c2c2c2", "#cfcfcf", "#e7e7e7"]
+      },
+      "border-soft": {
+        "role": "neutral",
+        "displayName": "Soft Divider",
+        "canonical": "#e7e7e7",
+        "tonalRamp": ["#232323", "#454545", "#6e6e6e", "#999999", "#b9b9b9", "#cfcfcf", "#dddddd", "#f0f0f0"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Primary Ink",
+        "canonical": "#111111",
+        "tonalRamp": ["#080808", "#111111", "#3a3a3a", "#626262", "#898989", "#b0b0b0", "#d4d4d4", "#eeeeee"]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Secondary Ink",
+        "canonical": "#5a5a5a",
+        "tonalRamp": ["#111111", "#2d2d2d", "#5a5a5a", "#777777", "#999999", "#b9b9b9", "#d6d6d6", "#eeeeee"]
+      },
+      "evidence-violet-subtle": {
+        "role": "primary",
+        "displayName": "Evidence Violet Mist",
+        "canonical": "#f1e9ff",
+        "tonalRamp": ["#211333", "#412566", "#623899", "#834bcc", "#a66ee5", "#c39def", "#ddc8f7", "#f1e9ff"]
+      },
+      "evidence-violet": {
+        "role": "primary",
+        "displayName": "Evidence Violet",
+        "canonical": "#5b2a9e",
+        "tonalRamp": ["#1d0d33", "#35185c", "#4a2281", "#5b2a9e", "#7c4fba", "#a47bd2", "#cbb2e8", "#eee5f8"]
+      },
+      "evidence-violet-border": {
+        "role": "primary",
+        "displayName": "Evidence Violet Focus",
+        "canonical": "#7c3aed",
+        "tonalRamp": ["#220e49", "#3d1982", "#5724ba", "#7c3aed", "#9662f2", "#b58df6", "#d4bbfa", "#f0e8fe"]
+      },
+      "evidence-violet-hover": {
+        "role": "primary",
+        "displayName": "Evidence Violet Hover",
+        "canonical": "#4a2180",
+        "tonalRamp": ["#170a28", "#2b134b", "#3d1b6a", "#4a2180", "#714ba0", "#9978bd", "#c2abd8", "#eae1f2"]
+      },
+      "evidence-violet-active": {
+        "role": "primary",
+        "displayName": "Evidence Violet Active",
+        "canonical": "#35145f",
+        "tonalRamp": ["#11061f", "#200c3a", "#2d1151", "#35145f", "#62477f", "#8f78a1", "#bcaac5", "#e8e0eb"]
+      },
+      "on-accent": {
+        "role": "neutral",
+        "displayName": "On Accent",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#4d4d4d", "#7a7a7a", "#a8a8a8", "#cccccc", "#e3e3e3", "#f2f2f2", "#ffffff"]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Tool Rail",
+        "canonical": "#151515",
+        "tonalRamp": ["#0a0a0a", "#151515", "#3d3d3d", "#656565", "#8b8b8b", "#b2b2b2", "#d5d5d5", "#eeeeee"]
+      },
+      "rail-surface": {
+        "role": "neutral",
+        "displayName": "Rail Surface",
+        "canonical": "#2a2a2a",
+        "tonalRamp": ["#0d0d0d", "#2a2a2a", "#4d4d4d", "#707070", "#929292", "#b5b5b5", "#d6d6d6", "#eeeeee"]
+      },
+      "rail-muted": {
+        "role": "neutral",
+        "displayName": "Rail Muted",
+        "canonical": "#a6a6a6",
+        "tonalRamp": ["#191919", "#323232", "#505050", "#6e6e6e", "#898989", "#a6a6a6", "#cccccc", "#eeeeee"]
+      },
+      "positive-surface": { "role": "tertiary", "displayName": "Positive Surface", "canonical": "#e3f3e8", "tonalRamp": ["#16331f", "#285c38", "#3d8753", "#69aa7c", "#94c6a3", "#b9ddc2", "#d7ecdc", "#eef8f1"] },
+      "positive-ink": { "role": "tertiary", "displayName": "Positive Ink", "canonical": "#146c2e", "tonalRamp": ["#082410", "#0e4820", "#146c2e", "#3b8b52", "#68aa78", "#98c8a4", "#c5e3cb", "#edf7ef"] },
+      "caution-surface": { "role": "tertiary", "displayName": "Caution Surface", "canonical": "#fdf1dc", "tonalRamp": ["#38270b", "#674817", "#976b24", "#bd9149", "#d8b978", "#ead6a8", "#f5e8cb", "#fdf7ec"] },
+      "caution-ink": { "role": "tertiary", "displayName": "Caution Ink", "canonical": "#8a5a00", "tonalRamp": ["#2c1c00", "#573900", "#8a5a00", "#ab7b2f", "#c79c63", "#dfbf96", "#efddc4", "#faf3e8"] },
+      "info-surface": { "role": "tertiary", "displayName": "Information Surface", "canonical": "#e5eefb", "tonalRamp": ["#162438", "#29446a", "#3e659d", "#6889b9", "#96add1", "#bbcce5", "#d8e4f2", "#eff5fc"] },
+      "info-ink": { "role": "tertiary", "displayName": "Information Ink", "canonical": "#1a4a8a", "tonalRamp": ["#09182d", "#11315d", "#1a4a8a", "#4770a4", "#7898bf", "#a5bad7", "#cedbea", "#eef4fa"] },
+      "negative-surface": { "role": "tertiary", "displayName": "Negative Surface", "canonical": "#fbe6e6", "tonalRamp": ["#381818", "#672d2d", "#974343", "#ba6c6c", "#d49797", "#e7bcbc", "#f2d9d9", "#fceded"] },
+      "negative-ink": { "role": "tertiary", "displayName": "Negative Ink", "canonical": "#a02323", "tonalRamp": ["#340b0b", "#681717", "#a02323", "#b65353", "#ce8585", "#e1b0b0", "#efd4d4", "#faeeee"] },
+      "neutral-surface": { "role": "neutral", "displayName": "Neutral Status Surface", "canonical": "#ececee", "tonalRamp": ["#232325", "#46464a", "#6f6f75", "#9a9aa0", "#bcbcc1", "#d2d2d6", "#e2e2e5", "#f4f4f5"] },
+      "neutral-ink": { "role": "neutral", "displayName": "Neutral Status Ink", "canonical": "#4a4f5c", "tonalRamp": ["#16181c", "#30333b", "#4a4f5c", "#6f7480", "#969aa4", "#b9bcc3", "#d9dade", "#f0f0f2"] },
+      "workstream-delivery-surface": { "role": "tertiary", "displayName": "Governed Delivery Surface", "canonical": "#e1f2ec", "tonalRamp": ["#142f29", "#28594e", "#3d8373", "#69a999", "#95c6ba", "#b9ddd3", "#d6ece6", "#eef8f5"] },
+      "workstream-delivery-ink": { "role": "tertiary", "displayName": "Governed Delivery Ink", "canonical": "#146c5a", "tonalRamp": ["#08241e", "#0e483c", "#146c5a", "#3b8b7b", "#68aa9c", "#98c8be", "#c5e3dc", "#edf7f4"] },
+      "workstream-practice-surface": { "role": "tertiary", "displayName": "Practice Surface", "canonical": "#fbe6f0", "tonalRamp": ["#381624", "#672942", "#973e62", "#ba6889", "#d494ae", "#e7bacd", "#f2d7e4", "#fcecf4"] },
+      "workstream-practice-ink": { "role": "tertiary", "displayName": "Practice Ink", "canonical": "#a02362", "tonalRamp": ["#340b20", "#681740", "#a02362", "#b65382", "#ce85a5", "#e1b0c4", "#efd4e0", "#faeef3"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page-level workspace headings." },
+      "headline": { "displayName": "Headline", "purpose": "Major section headings." },
+      "title": { "displayName": "Title", "purpose": "Drawer records and subsection headings." },
+      "body": { "displayName": "Body", "purpose": "Explanations, records, tables, and form content." },
+      "label": { "displayName": "Label", "purpose": "Metadata, tags, and compact controls." }
+    },
+    "shadows": [
+      { "name": "quiet-surface", "value": "0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 10px rgba(0, 0, 0, 0.03)", "purpose": "Cards, callouts, and filter groups at rest." },
+      { "name": "raised-surface", "value": "0 4px 8px rgba(0, 0, 0, 0.05), 0 12px 24px rgba(0, 0, 0, 0.06)", "purpose": "Hovered cards and tooltips." },
+      { "name": "transient-layer", "value": "0 8px 16px rgba(0, 0, 0, 0.07), 0 24px 48px rgba(0, 0, 0, 0.10)", "purpose": "Docked drawers and floating confirmation feedback." }
+    ],
+    "motion": [
+      { "name": "tooltip-reveal", "value": "120ms ease", "purpose": "Short opacity and translation feedback for rail labels." },
+      { "name": "drawer-entry", "value": "240ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Right-docked drawer entry and exit; removed for reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "compact-shell", "value": "720px" },
+      { "name": "single-column-drawer", "value": "600px" },
+      { "name": "narrow-controls", "value": "460px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Compact high-commitment action with a visible keyboard focus state.",
+      "html": "<button class=\"ds-btn-primary\">Add capability</button>",
+      "css": ".ds-btn-primary { background: var(--accent-bold, #5b2a9e); color: var(--on-accent, #fff); border: 1px solid var(--accent-bold, #5b2a9e); border-radius: var(--radius-sm, 4px); padding: 8px 16px; font: 700 0.875rem/1.5 var(--font-body, sans-serif); cursor: pointer; } .ds-btn-primary:hover { background: var(--accent-hover, #4a2180); border-color: var(--accent-hover, #4a2180); } .ds-btn-primary:active { background: var(--accent-active, #35145f); border-color: var(--accent-active, #35145f); } .ds-btn-primary:focus-visible { outline: 3px solid var(--accent-focus, #7c3aed); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action that remains quiet until hover or focus.",
+      "html": "<button class=\"ds-btn-ghost\">Cancel</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: var(--color-text, #111); border: 1px solid var(--color-border, #d8d8d8); border-radius: var(--radius-sm, 4px); padding: 8px 16px; font: 700 0.875rem/1.5 var(--font-body, sans-serif); cursor: pointer; } .ds-btn-ghost:hover { border-color: var(--accent-border, #7c3aed); color: var(--accent-default, #5b2a9e); } .ds-btn-ghost:focus-visible { outline: 3px solid var(--accent-focus, #7c3aed); outline-offset: 2px; }"
+    },
+    {
+      "name": "Capability Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Interactive evidence record with restrained elevation and clear metadata hierarchy.",
+      "html": "<button class=\"ds-capability-card\"><strong>Design review capability</strong><span>Owner to confirm</span><span class=\"ds-card-tag\">Under investigation</span></button>",
+      "css": ".ds-capability-card { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; padding: 16px; background: var(--color-surface, #fff); color: var(--color-text, #111); border: 1px solid var(--color-border-soft, #e7e7e7); border-radius: var(--radius-md, 8px); box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 10px rgba(0,0,0,.03); font: 400 0.875rem/1.5 var(--font-body, sans-serif); text-align: left; cursor: pointer; } .ds-capability-card strong { font-size: 1rem; } .ds-capability-card > span:not(.ds-card-tag) { color: var(--color-text-muted, #5a5a5a); } .ds-capability-card:hover { border-color: var(--color-accent, #5b2a9e); box-shadow: 0 4px 8px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.06); } .ds-capability-card:focus-visible { outline: 3px solid var(--accent-focus, #7c3aed); outline-offset: 2px; } .ds-card-tag { padding: 2px 8px; border-radius: 9999px; background: #e5eefb; color: #1a4a8a; font-size: .75rem; font-weight: 700; }"
+    },
+    {
+      "name": "Inset Label Field",
+      "kind": "input",
+      "description": "Creation-flow field with a persistent inset label and large touch target.",
+      "html": "<label class=\"ds-field\"><span>Capability name</span><input type=\"text\" placeholder=\"e.g. Design review assistant\"></label>",
+      "css": ".ds-field { position: relative; display: block; font-family: var(--font-body, sans-serif); } .ds-field span { position: absolute; top: 12px; left: 16px; z-index: 1; color: var(--color-text, #111); font-size: .75rem; font-weight: 700; pointer-events: none; } .ds-field input { width: 100%; min-height: 76px; padding: 34px 16px 12px; border: 1px solid var(--color-border, #d8d8d8); border-radius: var(--radius-lg, 10px); background: var(--color-surface, #fff); color: var(--color-text, #111); font: 400 1rem/1.5 var(--font-body, sans-serif); } .ds-field input:focus { outline: 3px solid var(--accent-focus, #7c3aed); outline-offset: 1px; }"
+    },
+    {
+      "name": "Positive Status Chip",
+      "kind": "chip",
+      "refersTo": "chip-positive",
+      "description": "Semantic state label whose color is reserved for positive status data.",
+      "html": "<span class=\"ds-chip-positive\">Approved</span>",
+      "css": ".ds-chip-positive { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid transparent; border-radius: 9999px; background: var(--tone-positive-bg, #e3f3e8); color: var(--tone-positive-text, #146c2e); font: 700 .75rem/1.33 var(--font-body, sans-serif); white-space: nowrap; }"
+    },
+    {
+      "name": "Icon Rail Navigation",
+      "kind": "nav",
+      "description": "Compact dark navigation rail with circular selected and hover states.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Example navigation\"><button class=\"ds-rail-item ds-rail-item-active\" aria-label=\"Read me\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4z\"/><path d=\"M20 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20z\"/></svg></button><button class=\"ds-rail-item\" aria-label=\"Landscape map\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></button></nav>",
+      "css": ".ds-rail { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 76px; padding: 18px 10px; background: var(--sidebar-bg, #151515); } .ds-rail-item { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid transparent; border-radius: 9999px; background: transparent; color: var(--sidebar-text-muted, #a6a6a6); cursor: pointer; } .ds-rail-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-rail-item:hover { background: rgba(255,255,255,.08); color: #fff; } .ds-rail-item-active { background: var(--sidebar-active-bg, #2a2a2a); color: var(--accent-subtle, #f1e9ff); } .ds-rail-item:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Docked Drawer",
+      "kind": "custom",
+      "description": "Right-docked transient layer for evidence detail and capability creation.",
+      "html": "<aside class=\"ds-drawer\"><header><strong>Capability details</strong><button aria-label=\"Close\">×</button></header><div><small>REG-001</small><h3>Design review capability</h3><p>Current governance, maturity, and evidence state.</p></div></aside>",
+      "css": ".ds-drawer { width: min(100%, 420px); min-height: 320px; margin-left: auto; background: var(--color-surface, #fff); color: var(--color-text, #111); box-shadow: 0 8px 16px rgba(0,0,0,.07), 0 24px 48px rgba(0,0,0,.10); font-family: var(--font-body, sans-serif); } .ds-drawer header { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px; border-bottom: 1px solid var(--color-border-soft, #e7e7e7); background: rgba(255,255,255,.96); } .ds-drawer header button { width: 44px; height: 44px; border: 1px solid var(--color-border, #d8d8d8); border-radius: 9999px; background: transparent; color: var(--color-text-muted, #5a5a5a); font-size: 1.25rem; cursor: pointer; } .ds-drawer header button:hover { background: #f7f7f7; color: var(--color-text, #111); } .ds-drawer header button:focus-visible { outline: 3px solid var(--accent-focus, #7c3aed); outline-offset: 2px; } .ds-drawer > div { padding: 28px; } .ds-drawer small { color: var(--color-text-muted, #5a5a5a); font-weight: 700; letter-spacing: .07em; } .ds-drawer h3 { margin: 8px 0 14px; font-size: 1.5rem; line-height: 1.16; } .ds-drawer p { color: var(--color-text-muted, #5a5a5a); line-height: 1.5; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Evidence Workbench",
+    "overview": "This system is a calm, rigorous, accountable workspace for inspecting capability evidence and making portfolio decisions. Its compact dark rail acts as a stable tool rack beside an off-white working plane; white records, tables, and drawers hold the evidence without competing with it.\n\nThe visual language is deliberately operational rather than promotional. Dense information is made navigable through strong type hierarchy, consistent spacing, quiet borders, explicit semantic states, and selective depth. Interaction color is scarce and meaningful, while status color always preserves its data meaning.",
+    "keyCharacteristics": [
+      "Compact monochrome application chassis with a dark icon rail.",
+      "Off-white workspace and white evidence surfaces.",
+      "Backpack-derived typography with strong, compact headings.",
+      "Evidence Violet reserved for interaction, focus, and illustrative evidence.",
+      "Semantic status colors that never become decoration.",
+      "Right-docked drawers for detail and creation work."
+    ],
+    "rules": [
+      { "name": "The One Interaction Voice Rule", "body": "Evidence Violet is the only chromatic interaction accent; do not introduce competing section or navigation colors.", "section": "colors" },
+      { "name": "The Status Is Data Rule", "body": "Positive, caution, information, negative, and neutral colors communicate state only. Never reuse them for decorative card edges, page sections, or generic emphasis.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Use Skyscanner Relative across display, body, labels, tables, and controls; hierarchy comes from role, weight, size, and spacing rather than decorative type changes.", "section": "typography" },
+      { "name": "The Earned Elevation Rule", "body": "Depth must indicate containment, interaction, or transience; static page sections do not receive shadows merely for decoration.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do preserve the dark-rail, off-white-workspace, white-surface hierarchy.",
+      "Do use semantic tone pairs consistently and keep unknown states explicitly labelled.",
+      "Do let borders, spacing, and typography carry most of the hierarchy.",
+      "Do keep evidence tables horizontally scrollable when their information model requires width.",
+      "Do use right-docked drawers for contextual detail and creation work."
+    ],
+    "donts": [
+      "Don't use decorative gradients or mixed accents within a section.",
+      "Don't repurpose semantic status colors as navigation, card-edge, or section decoration.",
+      "Don't introduce editorial serif typography into the application system.",
+      "Don't import public marketing graphics or illustrated empty states into this evidence workspace.",
+      "Don't imply that visual polish makes illustrative or unknown data confirmed."
+    ]
+  }
+}
