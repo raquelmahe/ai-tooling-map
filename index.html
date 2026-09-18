@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>AI Tooling Landscape - Design Infrastructure</title>
 <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -63,7 +63,6 @@
   <div class="app-main">
 
     <header class="page-header" id="global-page-header">
-      <p class="eyebrow">Design Infrastructure</p>
       <h1>Product Design AI Tooling System</h1>
       <p class="page-header__subtitle">
         A working, evidence-based model connecting the AI Tooling Landscape Map, the Tool and Capability Register,
@@ -138,12 +137,11 @@
 
   <!-- 01 - Landscape map ------------------------------------------------ -->
   <section id="panel-map" class="tabpanel" role="tabpanel" aria-labelledby="tab-map" tabindex="0" hidden>
-    <p class="eyebrow">Design Infrastructure</p>
     <h1>AI Tooling Landscape Map</h1>
     <p>Current-state view: known capabilities and placeholders organised by design workflow (rows) and lifecycle
     stage (columns). Empty cells are explicitly marked as capability gaps rather than left blank.</p>
 
-    <div class="table-scroll">
+    <div class="table-scroll" role="region" aria-label="AI tooling landscape matrix" tabindex="0">
       <table class="matrix-table" id="landscape-matrix" aria-label="AI tooling landscape matrix: workflow stage by lifecycle column">
         <thead>
           <tr>
@@ -154,14 +152,13 @@
       </table>
     </div>
 
-    <h3>Cross-cutting conditions</h3>
+    <h2>Cross-cutting conditions</h2>
     <p>These apply across the whole lifecycle, not to a single stage.</p>
     <ul class="cross-cutting-list" id="cross-cutting-list"></ul>
   </section>
 
   <!-- 02 - Capability register ------------------------------------------ -->
   <section id="panel-register" class="tabpanel" role="tabpanel" aria-labelledby="tab-register" tabindex="0" hidden>
-    <p class="eyebrow">Design Infrastructure</p>
     <div class="panel-header-row">
       <div>
         <h1>Tool and Capability Register</h1>
@@ -187,7 +184,7 @@
     </form>
     <p class="visually-hidden" id="capability-filter-status" role="status"></p>
 
-    <div class="table-scroll">
+    <div class="table-scroll" role="region" aria-label="Capability register table" tabindex="0">
       <table class="simple-table register-table" id="register-table">
         <caption class="visually-hidden">Capability register - portfolio review view</caption>
         <colgroup>
@@ -225,18 +222,17 @@
 
   <!-- 03 - Measurement dashboard ----------------------------------------- -->
   <section id="panel-dashboard" class="tabpanel" role="tabpanel" aria-labelledby="tab-dashboard" tabindex="0" hidden>
-    <p class="eyebrow">Design Infrastructure</p>
     <h1>Measurement Dashboard / Scorecard</h1>
     <p>Measurement chain: <strong>Investment / capability → adoption behaviour → workflow change → quality or delivery outcome → business contribution.</strong> This dashboard distinguishes activity from value - no fabricated figures are shown.</p>
 
-    <h3>Executive scorecard</h3>
+    <h2>Executive scorecard</h2>
     <div id="scorecard-groups"></div>
 
     <section class="strategy-linkage" aria-labelledby="strategy-linkage-title">
-      <h3 id="strategy-linkage-title">Business goals and strategy linkage</h3>
+      <h2 id="strategy-linkage-title">Business goals and strategy linkage</h2>
       <p>This view connects Design Infrastructure investments to departmental strategies and business outcomes. It distinguishes what the team directly enables from outcomes it contributes to alongside product, engineering, and commercial partners.</p>
       <p class="strategy-linkage__outcome"><strong>Department outcome:</strong> <span id="department-outcome"></span></p>
-      <div class="table-scroll">
+      <div class="table-scroll" role="region" aria-label="Business goals and strategy linkage table" tabindex="0">
         <table class="simple-table strategy-linkage__table" id="strategy-linkage-table">
           <caption class="visually-hidden">Business goals, Product Design strategies, enabling conditions, and measures</caption>
           <thead>
@@ -255,7 +251,7 @@
       </div>
     </section>
 
-    <h3>Example measurement chain (illustrative)</h3>
+    <h2>Example measurement chain (illustrative)</h2>
     <ol class="chain-list" id="measurement-chain"></ol>
     <p class="note-block">Each link in the chain needs its own evidence, baseline, owner, and data source. Correlation between capability use and any downstream outcome does not, by itself, prove causation.</p>
   </section>
@@ -273,22 +269,23 @@
   <div id="drawer-content"></div>
 </dialog>
 
-<dialog id="add-capability-dialog" class="capability-drawer capability-drawer--docked add-capability-drawer" aria-labelledby="add-capability-title">
+<dialog id="add-capability-dialog" class="capability-drawer capability-drawer--docked add-capability-drawer" aria-labelledby="add-capability-title" aria-describedby="session-storage-notice">
   <div class="drawer-topbar">
     <h2 id="add-capability-title">Add capability</h2>
     <button type="button" class="capability-drawer__close" id="add-capability-close" aria-label="Close add capability form"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
   </div>
   <div class="add-capability-drawer__content">
+    <p class="session-notice" id="session-storage-notice"><strong>Session-only prototype:</strong> new capabilities are not saved and will be lost when you refresh or leave this page.</p>
     <p class="add-capability-drawer__intro">Unknown fields must use a placeholder - never a fabricated value. A register ID is assigned automatically.</p>
 
-    <form id="add-capability-form" aria-labelledby="add-capability-details-title">
+    <form id="add-capability-form" aria-labelledby="add-capability-details-title" autocomplete="off">
     <div class="form-heading">
       <h3 id="add-capability-details-title">What capability would you like to add?</h3>
       <p>Capture the core details first. Add only evidence that is confirmed or clearly labelled as unknown.</p>
     </div>
     <div class="form-field">
       <label for="field-name">Capability name <span aria-hidden="true">*</span></label>
-      <input type="text" id="field-name" name="name" required placeholder="e.g. Design Radar - feedback and review tool" />
+      <input type="text" id="field-name" name="name" autocomplete="off" required placeholder="e.g. Design Radar - feedback and review tool" />
     </div>
 
     <div class="form-field">

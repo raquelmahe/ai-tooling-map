@@ -7,6 +7,12 @@
 
   const tabs = Array.from(document.querySelectorAll(".sidebar__tab"));
   const panels = Array.from(document.querySelectorAll(".tabpanel"));
+  const tablist = document.querySelector('[role="tablist"]');
+  const compactNavigation = window.matchMedia("(max-width: 720px)");
+
+  function syncTabOrientation() {
+    if (tablist) tablist.setAttribute("aria-orientation", compactNavigation.matches ? "horizontal" : "vertical");
+  }
 
   function activateTab(tab) {
     const globalHeader = document.getElementById("global-page-header");
@@ -26,8 +32,10 @@
     tab.addEventListener("click", () => activateTab(tab));
     tab.addEventListener("keydown", (event) => {
       let newIndex = null;
-      if (event.key === "ArrowDown") newIndex = (index + 1) % tabs.length;
-      if (event.key === "ArrowUp") newIndex = (index - 1 + tabs.length) % tabs.length;
+      const nextKey = compactNavigation.matches ? "ArrowRight" : "ArrowDown";
+      const previousKey = compactNavigation.matches ? "ArrowLeft" : "ArrowUp";
+      if (event.key === nextKey) newIndex = (index + 1) % tabs.length;
+      if (event.key === previousKey) newIndex = (index - 1 + tabs.length) % tabs.length;
       if (event.key === "Home") newIndex = 0;
       if (event.key === "End") newIndex = tabs.length - 1;
       if (newIndex !== null) {
@@ -36,6 +44,8 @@
       }
     });
   });
+  syncTabOrientation();
+  compactNavigation.addEventListener("change", syncTabOrientation);
 
   // ---------------------------------------------------------------------
   // Shared helpers
@@ -61,6 +71,13 @@
 
   function actionTag(action) {
     return `<span class="tag tag--info">${escapeHtml(action || "Investigate")}</span>`;
+  }
+
+  function provenanceTag(cap) {
+    if (cap.isExample) return '<span class="tag tag--example">Illustrative example</span>';
+    if (cap.isUnconfirmed) return '<span class="tag tag--unknown">Unconfirmed observation</span>';
+    if (cap.isSessionOnly) return '<span class="tag tag--caution">Session-only entry</span>';
+    return "";
   }
 
   function workstreamTag(workstreamKey, options) {
@@ -145,11 +162,12 @@
           </p>
         </div>
         ${registerCompact ? "" : `<p class="capability-card__desc">${escapeHtml(cap.description) || "<em>Description not yet defined</em>"}</p>`}
-        ${registerCompact ? `<div class="capability-card__badges">${workstreamTagsHtml(cap)}</div>` : `
+        ${registerCompact ? `<div class="capability-card__badges">${provenanceTag(cap)}${workstreamTagsHtml(cap)}</div>` : `
           <p class="capability-card__field"><strong>Primary user:</strong> ${escapeHtml(cap.role)}</p>
           <p class="capability-card__field"><strong>Owner:</strong> ${escapeHtml(cap.owner)}</p>
           <p class="capability-card__field"><strong>Maturity:</strong> ${maturityLabel(cap.maturity)}</p>
           <div class="capability-card__badges">
+            ${provenanceTag(cap)}
             ${workstreamTagsHtml(cap)}
             <span class="capability-card__status">${statusTag(cap.approvalStatus)}</span>
           </div>
@@ -166,6 +184,7 @@
         <p class="drawer-id">${escapeHtml(cap.id)}</p>
         <h3 id="drawer-title" class="drawer-title">${escapeHtml(cap.name.replace("EXAMPLE - ", ""))}</h3>
         <div class="drawer-badges">
+          ${provenanceTag(cap)}
           ${workstreamTagsHtml(cap)}
         </div>
         <p class="drawer-description">${escapeHtml(cap.description) || "Description not yet defined"}</p>
@@ -408,10 +427,10 @@
 
     container.innerHTML = Object.entries(strategyGroups).map(([strategy, groups]) => `
       <section class="scorecard-strategy" aria-label="${escapeHtml(strategy)} scorecard measures">
-        <h4>${escapeHtml(strategy)}</h4>
+        <h3>${escapeHtml(strategy)}</h3>
         ${groups.map((group) => `
           <section class="scorecard-group" aria-label="${escapeHtml(group.group)}">
-            <h5>${escapeHtml(group.group)}</h5>
+            <h4>${escapeHtml(group.group)}</h4>
             ${group.indicators.map(indicatorCardHtml).join("")}
           </section>
         `).join("")}
@@ -476,6 +495,7 @@
     return {
       id: generateNextRegisterId(),
       isExample: false,
+      isSessionOnly: true,
       name: (formData.get("name") || "").toString().trim(),
       description: (formData.get("description") || "").toString().trim(),
       role: (formData.get("role") || "").toString().trim() || "Owner to confirm",
@@ -500,8 +520,17 @@
     CAPABILITIES_BY_ID[capability.id] = capability;
     rerenderAfterDataChange();
     activateTab(document.getElementById("tab-register"));
-    showAddConfirmation(`${capability.id} - "${capability.name}" added to the register.`);
+    hasSessionChanges = true;
+    showAddConfirmation(`${capability.id} - "${capability.name}" added for this session only. It will not be saved after you leave or refresh.`);
   }
+
+  let hasSessionChanges = false;
+
+  window.addEventListener("beforeunload", (event) => {
+    if (!hasSessionChanges) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
 
   function initAddCapabilityForm() {
     const dialog = document.getElementById("add-capability-dialog");
@@ -533,20 +562,28 @@
       document.getElementById("field-name").focus();
     };
 
+    const hasEnteredData = () => ["name", "description", "role", "jobToBeDone", "owner", "backpackConnection", "principalRisk"]
+      .some((name) => String(new FormData(form).get(name) || "").trim());
+
+    const requestClose = () => {
+      if (hasEnteredData() && !window.confirm("Discard this capability? Your entered information will not be saved.")) return;
+      closeCapabilityDrawer(dialog);
+    };
+
     openButtons.forEach((button) => button.addEventListener("click", () => openDialog("")));
     document.addEventListener("open-add-capability", (event) => {
       openDialog(event.detail && event.detail.name ? event.detail.name : "");
     });
 
-    closeBtn.addEventListener("click", () => closeCapabilityDrawer(dialog));
-    cancelBtn.addEventListener("click", () => closeCapabilityDrawer(dialog));
+    closeBtn.addEventListener("click", requestClose);
+    cancelBtn.addEventListener("click", requestClose);
     dialog.addEventListener("cancel", (event) => {
       event.preventDefault();
-      closeCapabilityDrawer(dialog);
+      requestClose();
     });
     dialog.addEventListener("close", () => dialog.classList.remove("is-open"));
     dialog.addEventListener("click", (event) => {
-      if (clickIsOutsideDialog(event, dialog)) closeCapabilityDrawer(dialog);
+      if (clickIsOutsideDialog(event, dialog)) requestClose();
     });
 
     form.addEventListener("submit", (event) => {
