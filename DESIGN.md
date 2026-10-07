@@ -64,6 +64,8 @@ rounded:
   sm: "4px"
   md: "8px"
   lg: "10px"
+  panel: "16px"
+  2xl: "20px"
   pill: "9999px"
 spacing:
   2xs: "0.125rem"
@@ -191,6 +193,8 @@ The system is layered by purpose. Borders and tonal contrast provide the default
 
 Corners are gently curved and compact. Small controls use the tightest radius, cards use the middle radius, larger field containers and data tables use the largest radius, and pills are reserved for status tags and circular navigation controls. Borders remain thin and quiet; dashed borders identify unknown or illustrative states rather than generic decoration.
 
+Two larger radii exist specifically for nested scorecard containment: **Panel** (16px) for a soft workspace-tinted wrapper nested inside a card, and the largest, **2xl** (20px), for the outer collapsible group container that holds a set of panels. The nesting rule: the outer container gets the softest, largest curve; each layer nested inside it steps down one radius so containment reads through the corners alone.
+
 ## Components
 
 Components are restrained and dependable: familiar in behavior, compact in density, and explicit in state.
@@ -210,6 +214,9 @@ Components are restrained and dependable: familiar in behavior, compact in densi
 - **Background:** Evidence Surface on Workbench Paper.
 - **Shadow Strategy:** Quiet at rest and raised on interactive hover.
 - **Internal Padding:** The base spacing step is the default inset.
+
+### Scorecard Groups (nested containment)
+A three-layer nesting pattern used for the Measurement Dashboard's scorecard: an **outer group container** (Evidence Surface, 2xl radius, quiet shadow, collapsible via native `<details>`/`<summary>` with a rotating chevron) holds one **panel** per measure (Workbench Paper tint, Panel radius, no border — depth comes from the tonal contrast against the white group container, not a second shadow) which in turn holds individual **field tiles** (Evidence Surface, md radius, thin soft border) for Current state, Target, Trend, Confidence, and Owner. Evidence status is deliberately not a sixth tile — it is promoted to a chip in the panel header, since status is the fastest thing a reader needs to scan. Current state and Target keep a bolder value weight than the other tiles, preserving primary-metric emphasis inside an otherwise even tile row.
 
 ### Inputs / Fields
 - **Style:** White fields with structural borders, large gentle corners, and inset labels for the creation flow.

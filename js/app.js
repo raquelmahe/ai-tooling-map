@@ -14,7 +14,53 @@
     if (tablist) tablist.setAttribute("aria-orientation", compactNavigation.matches ? "horizontal" : "vertical");
   }
 
-  function activateTab(tab) {
+  // -- URL state: tabs and register filters are deep-linkable so a shared
+  // link or the browser Back/Forward buttons restore the same view. --------
+
+  const TAB_SLUGS = { "tab-readme": "readme", "tab-map": "map", "tab-register": "register", "tab-dashboard": "dashboard" };
+
+  function tabIdForSlug(slug) {
+    return Object.keys(TAB_SLUGS).find((id) => TAB_SLUGS[id] === slug);
+  }
+
+  function currentFilterValuesFromControls() {
+    const input = document.getElementById("capability-filter-input");
+    const approval = document.getElementById("filter-approval");
+    const maturity = document.getElementById("filter-maturity");
+    const evidence = document.getElementById("filter-evidence");
+    return {
+      query: input ? input.value : "",
+      approval: approval ? approval.value : "",
+      maturity: maturity ? maturity.value : "",
+      evidence: evidence ? evidence.value : "",
+    };
+  }
+
+  function buildHashForState(tabId) {
+    const params = new URLSearchParams();
+    params.set("tab", TAB_SLUGS[tabId] || "readme");
+    if (tabId === "tab-register") {
+      const filters = currentFilterValuesFromControls();
+      if (filters.query) params.set("q", filters.query);
+      if (filters.approval) params.set("approval", filters.approval);
+      if (filters.maturity) params.set("maturity", filters.maturity);
+      if (filters.evidence) params.set("evidence", filters.evidence);
+    }
+    return `#${params.toString()}`;
+  }
+
+  function writeUrlState(tabId, mode) {
+    if (mode === "skip") return;
+    const hash = buildHashForState(tabId);
+    const url = `${window.location.pathname}${window.location.search}${hash}`;
+    if (mode === "replace") window.history.replaceState(null, "", url);
+    else window.history.pushState(null, "", url);
+  }
+
+  function activateTab(tab, options) {
+    const opts = options || {};
+    const focusTab = opts.focus !== false;
+    const urlMode = opts.urlMode || "push";
     const globalHeader = document.getElementById("global-page-header");
     tabs.forEach((t) => {
       const selected = t === tab;
@@ -25,8 +71,41 @@
       panel.hidden = panel.id !== tab.getAttribute("aria-controls");
     });
     if (globalHeader) globalHeader.hidden = tab.id !== "tab-readme";
-    tab.focus();
+    if (focusTab) tab.focus();
+    writeUrlState(tab.id, urlMode);
   }
+
+  function applyStateFromHash(mode) {
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const tabId = tabIdForSlug(params.get("tab")) || "tab-readme";
+    const tab = document.getElementById(tabId);
+    if (!tab) return;
+
+    if (tabId === "tab-register") {
+      const input = document.getElementById("capability-filter-input");
+      const approval = document.getElementById("filter-approval");
+      const maturity = document.getElementById("filter-maturity");
+      const evidence = document.getElementById("filter-evidence");
+      const query = params.get("q") || "";
+      const approvalValue = params.get("approval") || "";
+      const maturityValue = params.get("maturity") || "";
+      const evidenceValue = params.get("evidence") || "";
+      if (input) input.value = query;
+      if (approval && Object.prototype.hasOwnProperty.call(APPROVAL_STATUSES, approvalValue)) approval.value = approvalValue;
+      if (maturity && MATURITY_STAGES.includes(maturityValue)) maturity.value = maturityValue;
+      if (evidence && Object.prototype.hasOwnProperty.call(EVIDENCE_STATES, evidenceValue)) evidence.value = evidenceValue;
+      renderRegisterTable({
+        query,
+        approval: approval ? approval.value : "",
+        maturity: maturity ? maturity.value : "",
+        evidence: evidence ? evidence.value : "",
+      });
+    }
+
+    activateTab(tab, { focus: false, urlMode: mode });
+  }
+
+  window.addEventListener("popstate", () => applyStateFromHash("skip"));
 
   tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => activateTab(tab));
@@ -53,15 +132,75 @@
 
   function statusTag(statusKey) {
     const status = APPROVAL_STATUSES[statusKey] || APPROVAL_STATUSES.unknown;
-    const toneClass = {
+    return `<span class="tag ${toneClassFor(status.tone)}"><span aria-hidden="true">${status.icon}</span> ${status.label}</span>`;
+  }
+
+  function toneClassFor(tone) {
+    return {
       positive: "tag--positive",
       caution: "tag--caution",
       info: "tag--info",
       negative: "tag--negative",
       neutral: "tag--neutral",
       unknown: "tag--unknown",
-    }[status.tone];
-    return `<span class="tag ${toneClass}"><span aria-hidden="true">${status.icon}</span> ${status.label}</span>`;
+    }[tone] || "tag--unknown";
+  }
+
+  function isIndicatorUnresolved(indicator) {
+    return (
+      indicator.current === "Data unavailable" ||
+      indicator.confidence === "Unknown" ||
+      !indicator.evidence
+    );
+  }
+
+  function scorecardEvidenceTag(indicator) {
+    const rawEvidence = (indicator.evidence || "").trim();
+    const evidenceText = rawEvidence || "Evidence status unknown";
+    // Tone is driven by what the badge actually says, not by whether the
+    // indicator is unresolved overall - otherwise an explicit call to
+    // action ("Baseline required") gets silently flattened to the same
+    // inert gray as a plain "no evidence provided" state, hiding the one
+    // signal that should stand out (Von Restorff).
+    const tone = !rawEvidence
+      ? "unknown"
+      : /required|missing|unresolved|gap|undefined|insufficient|no data|no comparison|confounding/i.test(evidenceText)
+        ? "caution"
+        : "positive";
+    return `<span class="tag ${toneClassFor(tone)}">${escapeHtml(evidenceText)}</span>`;
+  }
+
+  const SCORECARD_ACTION_BY_EVIDENCE = {
+    "baseline required": "Confirm a baseline and population before tracking this metric.",
+    "definition required": "Agree the metric definition with the capability owner.",
+    "no data source": "Identify a data source before this can be measured.",
+    "undefined metric": "Define this metric with the accountable team.",
+    "insufficient sample": "Grow the sample size before drawing conclusions.",
+    "no comparison group": "Establish a comparison group for this measure.",
+    "confounding factors": "Document and control for confounding factors.",
+  };
+
+  function scorecardActionHtml(indicator) {
+    if (!isIndicatorUnresolved(indicator)) return "";
+    const key = (indicator.evidence || "").trim().toLowerCase();
+    const action = SCORECARD_ACTION_BY_EVIDENCE[key];
+    if (!action) return "";
+    return `<p class="indicator-panel__action">${escapeHtml(action)}</p>`;
+  }
+
+  function scorecardReadinessHtml(indicator) {
+    const hasNumeric =
+      typeof indicator.currentValue === "number" &&
+      typeof indicator.targetValue === "number" &&
+      indicator.targetValue > 0;
+    if (!hasNumeric) return "";
+    const pct = Math.max(0, Math.min(100, Math.round((indicator.currentValue / indicator.targetValue) * 100)));
+    return `
+      <div class="indicator-panel__readiness">
+        <div class="indicator-panel__readiness-track"><div class="indicator-panel__readiness-fill" style="transform:scaleX(${pct / 100})"></div></div>
+        <span class="indicator-panel__readiness-caption">${escapeHtml(`${formatNumber(pct)}% of target`)}</span>
+      </div>
+    `;
   }
 
   function evidenceTag(evidenceKey) {
@@ -74,6 +213,7 @@
   }
 
   function provenanceTag(cap) {
+    if (cap.isTemplate) return '<span class="tag tag--unknown">Empty template</span>';
     if (cap.isExample) return '<span class="tag tag--example">Illustrative example</span>';
     if (cap.isUnconfirmed) return '<span class="tag tag--unknown">Unconfirmed observation</span>';
     if (cap.isSessionOnly) return '<span class="tag tag--caution">Session-only entry</span>';
@@ -105,6 +245,11 @@
     const index = MATURITY_STAGES.indexOf(maturity);
     if (index === -1) return maturity || "Unknown";
     return `${maturity} (stage ${index + 1} of ${MATURITY_STAGES.length})`;
+  }
+
+  const numberFormatter = new Intl.NumberFormat();
+  function formatNumber(value) {
+    return numberFormatter.format(value);
   }
 
   function escapeHtml(str) {
@@ -199,6 +344,7 @@
           <div><dt>Approval</dt><dd>${statusTag(cap.approvalStatus)}</dd></div>
           <div><dt>Maturity</dt><dd>${escapeHtml(maturityLabel(cap.maturity))}</dd></div>
           <div><dt>Evidence</dt><dd>${evidenceTag(cap.evidence)}</dd></div>
+          <div><dt>Recommended action</dt><dd>${actionTag(cap.recommendedAction)}</dd></div>
         </dl>
       </section>
 
@@ -322,10 +468,29 @@
   // 02 - Capability register
   // ---------------------------------------------------------------------
 
+  function renderPortfolioPulse() {
+    const container = document.getElementById("portfolio-pulse-metrics");
+    if (!container) return;
+
+    const metrics = [
+      { label: "Capabilities", value: CAPABILITIES.length },
+      { label: "Approval unknown", value: CAPABILITIES.filter((cap) => cap.approvalStatus === "unknown").length },
+      { label: "No evidence", value: CAPABILITIES.filter((cap) => cap.evidence === "none").length },
+      { label: "Owner to confirm", value: CAPABILITIES.filter((cap) => cap.owner === "Owner to confirm").length },
+    ];
+
+    container.innerHTML = metrics.map((metric) => `
+      <div class="portfolio-pulse__metric">
+        <dt>${metric.label}</dt>
+        <dd>${formatNumber(metric.value)}</dd>
+      </div>
+    `).join("");
+  }
+
   function registerRowHtml(cap) {
     const isUnresolved = cap.approvalStatus === "unknown" || cap.owner === "Owner to confirm" || cap.evidence === "none";
     return `
-      <tr${isUnresolved ? ' data-unresolved="true"' : ""}>
+      <tr data-cap-row-id="${escapeHtml(cap.id)}"${isUnresolved ? ' data-unresolved="true"' : ""}>
         <td class="register-table__capability-cell">${capabilityCardHtml(cap, { registerCompact: true })}</td>
         <td>${escapeHtml(cap.jobToBeDone) || '<em>Job to be done not yet defined</em>'}</td>
         <td>${escapeHtml(cap.workflowStage) || '<em>Not yet mapped</em>'}</td>
@@ -341,8 +506,24 @@
     `;
   }
 
+  function registerMobileCardHtml(cap) {
+    const isUnresolved = cap.approvalStatus === "unknown" || cap.owner === "Owner to confirm" || cap.evidence === "none";
+    return `
+      <article class="register-mobile-card" role="listitem" data-cap-row-id="${escapeHtml(cap.id)}"${isUnresolved ? ' data-unresolved="true"' : ""}>
+        ${capabilityCardHtml(cap, { registerCompact: true })}
+        <dl class="register-mobile-card__summary">
+          <div><dt>Approval</dt><dd>${statusTag(cap.approvalStatus)}</dd></div>
+          <div><dt>Evidence</dt><dd>${evidenceTag(cap.evidence)}</dd></div>
+          <div><dt>Next action</dt><dd>${actionTag(cap.recommendedAction)}</dd></div>
+          <div><dt>Owner</dt><dd>${escapeHtml(cap.owner)}</dd></div>
+        </dl>
+      </article>
+    `;
+  }
+
   function renderRegisterTable(filters) {
     const tbody = document.getElementById("register-table-body");
+    const mobileList = document.getElementById("register-mobile-list");
     const filterInput = document.getElementById("capability-filter-input");
     const currentFilters = typeof filters === "object" && filters !== null
       ? filters
@@ -364,6 +545,11 @@
     tbody.innerHTML = rows.length
       ? rows.map(registerRowHtml).join("")
       : '<tr><td colspan="11"><em>No capabilities match this filter.</em></td></tr>';
+    if (mobileList) {
+      mobileList.innerHTML = matchingCapabilities.length
+        ? matchingCapabilities.map(registerMobileCardHtml).join("")
+        : '<p class="register-empty">No capabilities match this filter.</p>';
+    }
 
     const status = document.getElementById("capability-filter-status");
     if (status) {
@@ -400,19 +586,46 @@
     `).join("");
   }
 
-  function indicatorCardHtml(indicator) {
+  const PLACEHOLDER_TILE_VALUES = new Set([
+    "data unavailable",
+    "target to confirm",
+    "owner to confirm",
+    "not yet measurable",
+    "unknown",
+  ]);
+
+  function isPlaceholderTileValue(value) {
+    const trimmed = (value || "").trim().toLowerCase();
+    return !trimmed || PLACEHOLDER_TILE_VALUES.has(trimmed);
+  }
+
+  function indicatorTileHtml(label, value, options) {
+    const strong = options && options.strong ? " indicator-tile__value--strong" : "";
     return `
-      <div class="indicator-card">
-        <p class="indicator-card__title">${escapeHtml(indicator.outcome)}</p>
-        <dl class="indicator-card__grid">
-          <div><dt>Current state</dt><dd>${escapeHtml(indicator.current)}</dd></div>
-          <div><dt>Target</dt><dd>${escapeHtml(indicator.target)}</dd></div>
-          <div><dt>Trend</dt><dd>${escapeHtml(indicator.trend)}</dd></div>
-          <div><dt>Confidence</dt><dd>${escapeHtml(indicator.confidence)}</dd></div>
-          <div><dt>Evidence status</dt><dd>${escapeHtml(indicator.evidence)}</dd></div>
-          <div><dt>Owner</dt><dd>${escapeHtml(indicator.owner)}</dd></div>
-        </dl>
-        ${indicator.commentary ? `<p class="capability-card__field"><strong>Commentary:</strong> ${escapeHtml(indicator.commentary)}</p>` : ""}
+      <div class="indicator-tile">
+        <p class="indicator-tile__label">${escapeHtml(label)}</p>
+        <p class="indicator-tile__value${strong}">${escapeHtml(value)}</p>
+      </div>
+    `;
+  }
+
+  function indicatorPanelHtml(indicator) {
+    return `
+      <div class="indicator-panel">
+        <div class="indicator-panel__header">
+          <p class="indicator-panel__title">${escapeHtml(indicator.outcome)}</p>
+          ${scorecardEvidenceTag(indicator)}
+        </div>
+        <div class="indicator-panel__tiles">
+          ${indicatorTileHtml("Current state", indicator.current, { strong: !isPlaceholderTileValue(indicator.current) })}
+          ${indicatorTileHtml("Target", indicator.target, { strong: !isPlaceholderTileValue(indicator.target) })}
+          ${indicatorTileHtml("Trend", indicator.trend)}
+          ${indicatorTileHtml("Confidence", indicator.confidence)}
+          ${indicatorTileHtml("Owner", indicator.owner)}
+        </div>
+        ${scorecardReadinessHtml(indicator)}
+        ${indicator.commentary ? `<p class="indicator-panel__commentary"><strong>Commentary:</strong> ${escapeHtml(indicator.commentary)}</p>` : ""}
+        ${scorecardActionHtml(indicator)}
       </div>
     `;
   }
@@ -428,12 +641,22 @@
     container.innerHTML = Object.entries(strategyGroups).map(([strategy, groups]) => `
       <section class="scorecard-strategy" aria-label="${escapeHtml(strategy)} scorecard measures">
         <h3>${escapeHtml(strategy)}</h3>
-        ${groups.map((group) => `
-          <section class="scorecard-group" aria-label="${escapeHtml(group.group)}">
-            <h4>${escapeHtml(group.group)}</h4>
-            ${group.indicators.map(indicatorCardHtml).join("")}
-          </section>
-        `).join("")}
+        ${groups.map((group) => {
+          const total = group.indicators.length;
+          const unresolved = group.indicators.filter(isIndicatorUnresolved).length;
+          return `
+          <details class="scorecard-group" open aria-label="${escapeHtml(group.group)}">
+            <summary class="scorecard-group__summary">
+              <span class="scorecard-group__title">${escapeHtml(group.group)}</span>
+              <span class="scorecard-group__count">${formatNumber(unresolved)} of ${formatNumber(total)} unresolved</span>
+              <span class="scorecard-group__chevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="scorecard-group__body">
+              ${group.indicators.map((indicator) => indicatorPanelHtml(indicator)).join("")}
+            </div>
+          </details>
+        `;
+        }).join("")}
       </section>
     `).join("");
   }
@@ -480,6 +703,7 @@
 
   function rerenderAfterDataChange() {
     renderLandscapeMatrix();
+    renderPortfolioPulse();
     renderRegisterTable();
   }
 
@@ -515,11 +739,28 @@
     };
   }
 
+  function highlightNewRegisterRow(capId) {
+    // Peak-End: give the add-capability task a visible, concrete landing
+    // point instead of just a transient toast - scroll the new record into
+    // view and briefly highlight it.
+    window.requestAnimationFrame(() => {
+      const selector = `[data-cap-row-id="${window.CSS && CSS.escape ? CSS.escape(capId) : capId}"]`;
+      const matches = Array.from(document.querySelectorAll(selector));
+      const target = matches.find((el) => el.offsetParent !== null) || matches[0];
+      if (!target) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      target.classList.add("register-row--new");
+      window.setTimeout(() => target.classList.remove("register-row--new"), 2000);
+    });
+  }
+
   function addCapability(capability) {
     CAPABILITIES.push(capability);
     CAPABILITIES_BY_ID[capability.id] = capability;
     rerenderAfterDataChange();
     activateTab(document.getElementById("tab-register"));
+    highlightNewRegisterRow(capability.id);
     hasSessionChanges = true;
     showAddConfirmation(`${capability.id} - "${capability.name}" added for this session only. It will not be saved after you leave or refresh.`);
   }
@@ -557,6 +798,7 @@
       document.getElementById("field-maturity").value = "Identified";
       document.getElementById("field-evidence").value = "none";
       document.getElementById("field-name").value = initialName || "";
+      document.getElementById("field-name").setCustomValidity("");
       dialog.showModal();
       window.requestAnimationFrame(() => dialog.classList.add("is-open"));
       document.getElementById("field-name").focus();
@@ -586,12 +828,20 @@
       if (clickIsOutsideDialog(event, dialog)) requestClose();
     });
 
+    const nameField = document.getElementById("field-name");
+    nameField.addEventListener("input", () => nameField.setCustomValidity(""));
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const data = new FormData(form);
       const name = (data.get("name") || "").toString().trim();
-      if (!name) {
-        document.getElementById("field-name").focus();
+      // Rely on native constraint validation for the inline error + focus
+      // handling (meets "errors inline next to fields, focus first error"
+      // without re-inventing browser-native validation UI). A whitespace-
+      // only name is additionally rejected via setCustomValidity.
+      nameField.setCustomValidity(name ? "" : "Enter a capability name.");
+      if (!form.checkValidity()) {
+        form.reportValidity();
         return;
       }
 
@@ -620,7 +870,12 @@
     const approval = populateFilter("filter-approval", Object.entries(APPROVAL_STATUSES).map(([value, item]) => ({ value, label: item.label })), "Approval status");
     const maturity = populateFilter("filter-maturity", MATURITY_STAGES.map((value) => ({ value, label: value })), "Maturity");
     const evidence = populateFilter("filter-evidence", Object.entries(EVIDENCE_STATES).map(([value, item]) => ({ value, label: item.label })), "Evidence state");
-    const applyFilters = () => renderRegisterTable({ query: input.value, approval: approval.value, maturity: maturity.value, evidence: evidence.value });
+    const applyFilters = () => {
+      renderRegisterTable({ query: input.value, approval: approval.value, maturity: maturity.value, evidence: evidence.value });
+      // Keep the URL in sync so a filtered register view is shareable and
+      // survives Back/Forward, without flooding history on every keystroke.
+      writeUrlState("tab-register", "replace");
+    };
 
     form.addEventListener("submit", (event) => event.preventDefault());
     input.addEventListener("input", applyFilters);
@@ -635,6 +890,7 @@
   renderLegends();
   renderLandscapeMatrix();
   renderCrossCutting();
+  renderPortfolioPulse();
   renderRegisterTable();
   renderStrategyLinkage();
   renderScorecard();
@@ -642,4 +898,8 @@
   initDrawer();
   initAddCapabilityForm();
   initCapabilityFilter();
+  // Restore tab + register filters from the URL on load (e.g. a shared
+  // deep link), without stealing focus or re-pushing a redundant history
+  // entry.
+  applyStateFromHash("replace");
 })();

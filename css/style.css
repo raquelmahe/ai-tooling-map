@@ -51,6 +51,8 @@
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 10px;
+  --radius-panel: 16px;
+  --radius-2xl: 20px;
   --radius-pill: 9999px;
 
   /* Shared spacing scale. Parent stacks own vertical rhythm; child margins
@@ -110,6 +112,17 @@
 
   --focus-ring: 3px solid var(--accent-focus);
 
+  /* Elevation discipline: hairline borders + surface tint carry hierarchy
+     for static content; box-shadow is reserved for genuinely lifted/overlay
+     elements (drawers, toasts, active hover/focus states), not resting
+     cards and panels. Tokenised here instead of repeated hex literals. */
+  --color-surface-sunken: #f7f7f7;
+  --color-border-strong: #a8a8a8;
+  --sidebar-tooltip-bg: #202020;
+  --sidebar-tooltip-border: #3a3a3a;
+  --sidebar-create-bg: #242424;
+  --sidebar-create-hover-bg: #303030;
+
   font-size: 16px;
 }
 
@@ -123,6 +136,9 @@ body {
   font-size: var(--step-0);
   font-weight: 400;
   line-height: var(--bpk-type-body-line-height);
+  /* Legibility baseline (interfaces.rauno.me / Web Interface Guidelines). */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, h5 {
@@ -130,11 +146,32 @@ h1, h2, h3, h4, h5 {
   color: var(--color-text);
   text-wrap: balance;
 }
-h1 { font-size: var(--bpk-type-heading-1-size); line-height: 1.2; font-weight: 900; letter-spacing: -0.0625rem; }
-h2 { font-size: var(--bpk-type-heading-2-size); line-height: 1.25; font-weight: 900; letter-spacing: -0.0625rem; }
-h3 { font-size: var(--bpk-type-heading-3-size); line-height: 1.2; font-weight: 700; letter-spacing: 0; }
-h4 { font-size: var(--bpk-type-heading-4-size); line-height: 1.2; font-weight: 700; letter-spacing: 0; }
-h5 { font-size: var(--bpk-type-heading-5-size); line-height: 1.25; font-weight: 700; letter-spacing: 0; }
+/* Sizes are the verified Backpack role tokens (unchanged) - a Requirement
+   for this project, not a value to re-derive from a formula.
+   Line-height: a Project choice. Tightening as size grows (1.1 at h1 ->
+   1.5 at body, multiline-heading/display ranges per the web-typography
+   skill's starting points) is visually meaningful at this font/weight -
+   confirmed by rendering h1-h5 together and comparing against the prior
+   alternating 1.2/1.25/1.2/1.2/1.25 values.
+   Letter-spacing: a Project choice, deliberately restrained. An A/B check
+   (toggling h1/h2/h3 letter-spacing to `normal` and re-rendering) showed
+   the em-based taper produces a real but small effect - roughly 3.6% of
+   headline width at h1 (measured via canvas text metrics, not estimated)
+   - with no clipping or balance-wrap regressions. This is not a universal
+   tracking rule; it was kept because it held up under inspection with
+   this project's actual font and headline lengths, not applied reflexively
+   to every heading as a default.
+   Weight 900 on h1/h2 is an intentional brand trait, confirmed with the
+   project owner, and is preserved as-is; h3-h5 keep their existing 700
+   weight tier. */
+h1 { font-size: var(--bpk-type-heading-1-size); line-height: 1.1; font-weight: 900; letter-spacing: -0.02em; }
+h2 { font-size: var(--bpk-type-heading-2-size); line-height: 1.15; font-weight: 900; letter-spacing: -0.015em; }
+h3 { font-size: var(--bpk-type-heading-3-size); line-height: 1.25; font-weight: 700; letter-spacing: -0.008em; }
+h4 { font-size: var(--bpk-type-heading-4-size); line-height: 1.3; font-weight: 700; letter-spacing: 0; }
+/* h5 shares body's 16px Backpack size with no larger-size step available.
+   Differentiate from body copy via tighter leading (1.4 vs body's 1.5) on
+   top of the existing bold weight, rather than relying on weight alone. */
+h5 { font-size: var(--bpk-type-heading-5-size); line-height: 1.4; font-weight: 700; letter-spacing: 0; }
 
 .skip-link {
   position: absolute;
@@ -273,9 +310,9 @@ a, button {
   width: max-content;
   max-width: 220px;
   padding: 6px 9px;
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--sidebar-tooltip-border);
   border-radius: var(--radius-sm);
-  background: #202020;
+  background: var(--sidebar-tooltip-bg);
   color: #ffffff;
   box-shadow: var(--shadow-md);
   font-size: var(--step--2);
@@ -302,13 +339,13 @@ a, button {
   margin-top: 14px;
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
-  background: #242424;
+  background: var(--sidebar-create-bg);
   color: #ffffff;
   font: inherit;
   font-size: var(--step-1);
   cursor: pointer;
 }
-.sidebar__create:hover { background: #303030; }
+.sidebar__create:hover { background: var(--sidebar-create-hover-bg); }
 .icon {
   width: 1em;
   height: 1em;
@@ -325,9 +362,9 @@ a, button {
   top: 50%;
   width: max-content;
   padding: 6px 9px;
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--sidebar-tooltip-border);
   border-radius: var(--radius-sm);
-  background: #202020;
+  background: var(--sidebar-tooltip-bg);
   color: #ffffff;
   box-shadow: var(--shadow-md);
   font-size: var(--step--2);
@@ -384,11 +421,23 @@ main {
 #panel-dashboard {
   padding-top: var(--space-lg);
 }
-.tabpanel > h1 ~ h2 { margin-top: var(--space-xl); }
-.tabpanel h3 { margin: var(--space-xl) 0 var(--space-md); }
-.tabpanel h4 { margin: var(--space-lg) 0 var(--space-sm); }
+/* Vertical rhythm: a Project choice related to the 24px body baseline
+   (16px x 1.5 line-height), not a strict locked baseline grid - wrapping
+   and natural content height are never clipped to preserve it. The
+   heading-before gap (24px here) stays larger than the heading-after gap
+   (12px, --space-md) so a heading reads as belonging to the content that
+   follows it rather than the content above it. These rules are scoped to
+   type stacking only - the shared --space-* scale used elsewhere
+   (padding, gaps, cards) is untouched. */
+.tabpanel > h1 ~ h2 { margin-top: 24px; }
+.tabpanel h3 { margin: 24px 0 var(--space-md); }
+.tabpanel h4 { margin: var(--space-lg) 0 var(--space-md); }
+/* Measure tightened from 78ch toward the 60-70ch sustained-reading
+   starting point (this body copy is explanatory prose, not UI chrome).
+   70ch stays within Butterick's wider 45-90ch acceptable range; this is
+   a starting-point adjustment, not a hard requirement. */
 .tabpanel > p {
-  max-width: 78ch;
+  max-width: 70ch;
   margin: 0 0 var(--space-base);
   color: var(--color-text-muted);
   line-height: var(--bpk-type-body-line-height);
@@ -398,7 +447,7 @@ main {
   margin: 0 0 var(--space-md);
 }
 .panel-header-row p {
-  max-width: 78ch;
+  max-width: 70ch;
   margin: 0 0 var(--space-base);
   color: var(--color-text-muted);
   line-height: var(--bpk-type-body-line-height);
@@ -411,7 +460,6 @@ main {
   padding: var(--space-base);
   border-radius: var(--radius-md);
   margin: 16px 0;
-  box-shadow: var(--shadow-sm);
 }
 .model-callout p { margin: 4px 0; }
 
@@ -459,6 +507,11 @@ main {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+.table-scroll-hint {
+  margin: var(--space-lg) 0 var(--space-sm);
+  color: var(--color-text-muted);
+  font-size: var(--step--1);
+}
 .tabpanel > p + .table-scroll {
   margin-top: var(--space-xl);
 }
@@ -483,6 +536,9 @@ main {
   padding: 8px 10px;
   text-align: left;
   vertical-align: top;
+  /* Resilience to long user-generated content: a pathological
+     no-space string must not blow out a fixed-width table column. */
+  overflow-wrap: anywhere;
 }
 .simple-table tr > :last-child,
 .matrix-table tr > :last-child {
@@ -493,13 +549,13 @@ main {
   border-bottom: 0;
 }
 .simple-table thead th, .matrix-table thead th {
-  background: #f7f7f7;
+  background: var(--color-surface-sunken);
   position: sticky;
   top: 0;
   font-weight: 700;
 }
 .matrix-table th[scope="row"] {
-  background: #fafafa;
+  background: var(--color-surface-sunken);
   min-width: 180px;
   font-weight: 700;
 }
@@ -593,6 +649,7 @@ main {
   font-size: var(--step-0);
   line-height: 1.35;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 .capability-card__id {
   color: var(--color-text-muted);
@@ -641,7 +698,6 @@ main {
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
   padding: var(--space-base);
-  box-shadow: var(--shadow-sm);
 }
 .cross-cutting-list strong { display: block; }
 .cross-cutting-list span { color: var(--color-text-muted); font-size: var(--step--1); line-height: 1.5; }
@@ -702,41 +758,180 @@ main {
 .scorecard-strategy > h3 {
   margin: 0 0 16px;
 }
+
+/* Scorecard group: a bordered, collapsible outer container per group
+   (Adoption and capability, Workflow and velocity, ...). Built on <details>
+   for free keyboard and screen-reader disclosure semantics. */
 .scorecard-group {
-  margin-bottom: 24px;
-}
-.scorecard-group h4 {
-  margin: 0 0 8px;
-  color: var(--color-text-muted);
-}
-.indicator-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-md);
-  padding: var(--space-base);
-  margin-bottom: var(--space-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
 }
-.indicator-card__title {
+.scorecard-group__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  list-style: none;
+}
+.scorecard-group__summary::-webkit-details-marker { display: none; }
+.scorecard-group__title {
+  font-weight: 700;
+  font-size: var(--step-0);
+  color: var(--color-text);
+  flex: 1 1 auto;
+}
+/* A rollup count, not an action - kept visually quieter than the colored
+   per-item evidence badges inside the group (no pill chrome) so the
+   aggregate doesn't outrank the actionable items it's summarising. */
+.scorecard-group__count {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  flex: 0 0 auto;
+}
+.scorecard-group__chevron {
+  flex: 0 0 auto;
+  display: inline-flex;
+  font-size: var(--step-1);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text-muted);
+  transition: transform 200ms ease;
+}
+.scorecard-group[open] > .scorecard-group__summary .scorecard-group__chevron {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .scorecard-group__chevron { transition: none; }
+}
+.scorecard-group__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-base);
+}
+
+/* Indicator panel: soft workspace-tinted wrapper per measure, nested
+   inside the group container. */
+.indicator-panel {
+  background: var(--color-bg);
+  border-radius: var(--radius-panel);
+  padding: var(--space-base);
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+.indicator-panel:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .indicator-panel { transition: none; }
+  .indicator-panel:hover { transform: none; }
+}
+.indicator-panel__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-base);
+  margin: 0 0 var(--space-md);
+}
+.indicator-panel__title {
   font-weight: 700;
   font-size: var(--step-0);
   line-height: 1.4;
-  margin: 0 0 var(--space-sm);
-}
-.indicator-card__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px 16px;
-  font-size: var(--step--1);
-}
-.indicator-card__grid dt {
-  font-weight: 700;
+  margin: 0;
   color: var(--color-text-muted);
-  font-size: var(--step--2);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
 }
-.indicator-card__grid dd { margin: 0 0 8px; }
+/* Field tiles: individual bordered cards per field, matching the Figma
+   exploration's tile treatment. Current state / Target keep the bold
+   value weight earned earlier so the primary metric still reads first;
+   Evidence status stays out of the tile row (it already lives in the
+   header chip) rather than duplicating it, per the earlier design pass. */
+.indicator-panel__tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.indicator-tile {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  flex: 1 1 140px;
+  min-width: 0;
+}
+.indicator-tile__label {
+  font-weight: 700;
+  font-size: var(--step--2);
+  color: var(--color-text);
+  margin: 0 0 var(--space-xs);
+}
+.indicator-tile__value {
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+.indicator-tile__value--strong {
+  font-size: var(--step-0);
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.indicator-panel__readiness {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0 0;
+}
+.indicator-panel__readiness-track {
+  flex: 1 1 auto;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-soft);
+  overflow: hidden;
+}
+.indicator-panel__readiness-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--accent-default);
+  border-radius: var(--radius-pill);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .indicator-panel__readiness-fill { transition: none; }
+}
+.indicator-panel__readiness-caption {
+  flex: 0 0 auto;
+  font-size: var(--step--2);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.indicator-panel__action {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.5;
+  margin: var(--space-md) 0 0;
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--color-border-soft);
+}
+.indicator-panel__commentary {
+  font-size: var(--step--2);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: var(--space-sm) 0 0;
+}
+.indicator-panel__commentary strong { color: var(--color-text); }
 
 .chain-list {
   padding-left: 20px;
@@ -752,6 +947,21 @@ main {
 .register-table {
   min-width: 2080px;
   table-layout: fixed;
+  overflow: visible;
+}
+
+/* Peak-End landing highlight for a just-added capability: a brief,
+   one-off tint that fades back to the resting surface. Not a continuous
+   animation, so background-color here doesn't fight the "compositor-only
+   props" rule meant for perf-sensitive repeating motion. */
+.register-table tbody td {
+  transition: background-color 1200ms ease;
+}
+.register-row--new td {
+  background-color: var(--accent-subtle);
+}
+@media (prefers-reduced-motion: reduce) {
+  .register-table tbody td { transition: none; }
 }
 .register-table__col--capability { width: 340px; }
 .register-table__col--problem { width: 210px; }
@@ -771,10 +981,7 @@ main {
 
 /* Runey reference: neutral chassis and full-card states, with no edge accents. */
 #panel-map .capability-card:hover,
-#panel-register .capability-card:hover { border-color: #a8a8a8; box-shadow: var(--shadow-md); }
-#panel-register .button--primary { background: var(--color-text); border-color: var(--color-text); }
-#panel-register .button--primary:hover { background: #333333; border-color: #333333; }
-#panel-register .button--ghost:hover { border-color: var(--color-text); color: var(--color-text); }
+#panel-register .capability-card:hover { border-color: var(--color-border-strong); box-shadow: var(--shadow-md); }
 
 .register-table__capability-cell {
   min-width: 260px;
@@ -785,8 +992,82 @@ main {
   gap: var(--space-base);
 }
 .register-table__capability-cell .capability-card:hover {
-  border-color: #a8a8a8;
+  border-color: var(--color-border-strong);
   box-shadow: var(--shadow-md);
+}
+
+/* Register summary -------------------------------------------------------- */
+
+.portfolio-pulse {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(520px, 2fr);
+  gap: var(--space-xl);
+  align-items: center;
+  margin: var(--space-lg) 0;
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--color-border-soft);
+  border-bottom: 1px solid var(--color-border-soft);
+}
+.portfolio-pulse__intro h2 {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--step-1);
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+.portfolio-pulse__intro p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+.portfolio-pulse__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+.portfolio-pulse__metric {
+  min-width: 0;
+  padding: 0 var(--space-base);
+  border-left: 1px solid var(--color-border-soft);
+}
+.portfolio-pulse__metric dt {
+  color: var(--color-text-muted);
+  font-size: var(--step--2);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.portfolio-pulse__metric dd {
+  margin: var(--space-xs) 0 0;
+  font-size: var(--step-2);
+  font-weight: 900;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.register-mobile-list {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .portfolio-pulse {
+    grid-template-columns: 1fr;
+    gap: var(--space-base);
+  }
+}
+
+@media (min-width: 721px) {
+  .register-table th:first-child,
+  .register-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--color-surface);
+    box-shadow: 1px 0 0 var(--color-border-soft);
+  }
+  .register-table thead th:first-child {
+    z-index: 3;
+    background: var(--color-surface-sunken);
+  }
 }
 
 /* Capability drawer ------------------------------------------------------ */
@@ -799,6 +1080,7 @@ main {
   width: calc(100% - 32px);
   max-height: calc(100vh - 64px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: var(--shadow-lg);
 }
 .capability-drawer::backdrop {
@@ -874,8 +1156,8 @@ main {
   height: 1.1rem;
 }
 .capability-drawer--docked .capability-drawer__close:hover {
-  border-color: #a8a8a8;
-  background: #f7f7f7;
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-sunken);
 }
 #drawer-content {
   padding: 28px;
@@ -941,7 +1223,7 @@ main {
   padding: var(--space-base);
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
-  background: #f7f7f7;
+  background: var(--color-surface-sunken);
 }
 .drawer-summary__header {
   margin-bottom: 18px;
@@ -1094,7 +1376,6 @@ main {
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
 }
 .quick-filter__icon {
   display: inline-flex;
@@ -1174,15 +1455,6 @@ main {
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-#add-capability-form .button--primary {
-  background: var(--color-text);
-  border-color: var(--color-text);
-}
-#add-capability-form .button--primary:hover {
-  background: #333333;
-  border-color: #333333;
 }
 .form-heading {
   margin-bottom: var(--space-sm);
@@ -1280,6 +1552,96 @@ main {
   .sidebar__label,
   .sidebar__tooltip { display: none; }
   .sidebar__create { width: 44px; height: 44px; margin: 0 0 0 6px; flex-shrink: 0; }
+  .scorecard-group { padding: var(--space-base); }
+  .indicator-panel__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+  .indicator-tile {
+    flex: 1 1 45%;
+  }
+  .portfolio-pulse {
+    grid-template-columns: 1fr;
+    gap: var(--space-base);
+  }
+  .portfolio-pulse__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--color-border-soft);
+  }
+  .portfolio-pulse__metric {
+    padding: var(--space-base) var(--space-base) 0 0;
+    border-left: 0;
+  }
+  .quick-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--space-sm);
+  }
+  .quick-filter__icon { display: none; }
+  .quick-filter input {
+    grid-column: 1 / -1;
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+  .select-control--filter { flex: none; }
+  .quick-filter .button { justify-content: center; }
+  .table-scroll-hint,
+  .table-scroll--register { display: none; }
+  .register-mobile-list {
+    display: grid;
+    gap: var(--space-md);
+    margin-top: var(--space-base);
+  }
+  .register-mobile-card {
+    min-width: 0;
+    padding: var(--space-base);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    transition: background-color 1200ms ease;
+  }
+  .register-mobile-card.register-row--new {
+    background-color: var(--accent-subtle);
+  }
+  .register-mobile-card > .capability-card {
+    padding: 0 0 var(--space-base);
+    border: 0;
+    border-bottom: 1px solid var(--color-border-soft);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .register-mobile-card > .capability-card:hover {
+    border-color: var(--color-border-soft) !important;
+    box-shadow: none !important;
+  }
+  .register-mobile-card__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-base);
+    margin: var(--space-base) 0 0;
+  }
+  .register-mobile-card__summary div { min-width: 0; }
+  .register-mobile-card__summary dt {
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-muted);
+    font-size: var(--step--2);
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .register-mobile-card__summary dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--step--1);
+    line-height: 1.45;
+  }
+  .register-empty {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
   .form-field-row { grid-template-columns: 1fr; }
   .capability-drawer--docked { width: min(100%, 680px); }
 }
@@ -1300,13 +1662,12 @@ main {
   .sidebar__brand { display: none; }
   .sidebar__list { justify-content: space-between; }
   .quick-filter {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 1fr;
     align-items: center;
   }
-  .quick-filter input { min-width: 0; }
+  .quick-filter input { grid-column: 1; min-width: 0; }
   .select-control--filter,
-  .quick-filter .button { grid-column: 1 / -1; width: 100%; }
+  .quick-filter .button { grid-column: 1; width: 100%; }
   .quick-filter select { min-height: 44px; }
   .quick-filter .button { justify-content: center; min-height: 44px; }
   .capability-drawer { width: calc(100% - 16px); }
@@ -1316,5 +1677,6 @@ main {
 @media (prefers-reduced-motion: reduce) {
   .capability-drawer--docked,
   .sidebar__label,
-  .sidebar__tooltip { transition: none; }
+  .sidebar__tooltip,
+  .register-mobile-card { transition: none; }
 }
